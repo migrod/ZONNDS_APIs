@@ -1,35 +1,248 @@
-HOST: http://www.google.com/
+HOST: http://zon-dpp-prod.apigee.net/
 
---- Sample API v2 ---
+--- ZON OData VOD v1.0 ---
+
 ---
-Welcome to the our sample API documentation. All comments can be written in (support [Markdown](http://daringfireball.net/projects/markdown/syntax) syntax)
+Welcome to ZON VOD OData API documentation.
+
+#### Required Parameters
+Every request needs a valid API key and you can set this value as an HTTP parameter named "client_id".
 ---
 
 --
-Shopping Cart Resources
-The following is a section of resources related to the shopping cart
+Catalog Items
+The following is a section of resources related to CatalogItem entity
 --
-List products added into your shopping-cart. (comment block again in Markdown)
-GET /shopping-cart
+
+List VOD catalog hierarchy items.
+GET /v1/odata-vod/CatalogItems?client_id={client_id}&$format=json
 < 200
 < Content-Type: application/json
-{ "items": [
-{ "url": "/shopping-cart/1", "product":"2ZY48XPZ", "quantity": 1, "name": "New socks", "price": 1.25 }
-] }
+{
+    "odata.metadata": "http://zon-odata-vod.apphb.com/Collections.svc/$metadata#CatalogItems",
+    "value": [
+        {
+            "Id": "000987a4-9621-4cd0-be3d-0d7e329f9b33",
+            "ParentId": "26e82c2c-ffb6-4a29-8836-950799250541",
+            "Catalog": "iris_nagra",
+            "ItemId": "CIPK2009812182251631",
+            "IsHidden": false,
+            "SortOrder": 248,
+            "IsRoot": false
+        },
+        {
+            "Id": "003cc841-f889-4a4c-956b-b90f152fa48e",
+            "ParentId": "e074190f-2226-4b3b-9eaf-4b8a5740e400",
+            "Catalog": "iris_nagra",
+            "ItemId": "CIPK2012828111627417",
+            "IsHidden": false,
+            "SortOrder": 39,
+            "IsRoot": false
+        }
+    ]
+}
 
-
-Save new products in your shopping cart
-POST /shopping-cart
-> Content-Type: application/json
-{ "product":"1AB23ORM", "quantity": 2 }
-< 201
-< Content-Type: application/json
-{ "status": "created", "url": "/shopping-cart/2" }
-
-
--- Payment Resources --
-This resource allows you to submit payment information to process your *shopping cart* items
-POST /payment
-{ "cc": "12345678900", "cvc": "123", "expiry": "0112" }
+Get VOD catalog item by identifier.
+GET /v1/odata-vod/CatalogItems('catalog_item_id')?client_id={client_id}&$format=json
 < 200
-{ "receipt": "/payment/receipt/1" }
+< Content-Type: application/json
+{
+}
+
+Get item (Category or Package) VOD catalog item identifier.
+GET /v1/odata-vod/CatalogItems('catalog_item_id')/Item?client_id={client_id}&$format=json
+< 200
+< Content-Type: application/json
+{
+}
+
+Get child catalog items by VOD catalog item identifier.
+GET /v1/odata-vod/CatalogItems('catalog_item_id')/ChildCatalogItems?client_id={client_id}&$format=json
+< 200
+< Content-Type: application/json
+{
+}
+
+--
+Items
+The following is a section of resources related to Items entity
+--
+
+List VOD Items (Categories and/or Packages).
+GET /v1/odata-vod/Items?client_id={client_id}&$format=json
+< 200
+< Content-Type: application/json
+{
+    "odata.metadata": "http://zon-odata-vod.apphb.com/Collections.svc/$metadata#Items",
+    "value": [
+        {
+            "odata.type": "zon.vod.central.odata.api.model.Package",
+            "Id": "CIPK000218D7B4D44E",
+            "Code": "S900000_UM_00602498539903_USMCV0400578_",
+            "Name": "Alice Cooper: Teenage Frankenstein",
+            "ItemType": "package",
+            "PosterUri": null,
+            "IsAdult": false,
+            "Catalogs": [
+                "iris_nagra"
+            ],
+            "PackageType": "SVODFilho",
+            "AdiAssetId": "CIPK000218D7B4D44E",
+            "OfferMetaData": {
+                "LicensingWindowStart": "2013-06-20T16:14:27.8722+00:00",
+                "LicensingWindowEnd": "2013-10-20T16:14:27.8722+00:00",
+                "Price": 2.5,
+                "MaximumViewingLength": "P2D",
+                "DaysToDisplayAsNew": 5,
+                "DaysToDisplayAsLastChance": 7,
+                "OfferingId": "24686",
+                "BillingId": "54064",
+                "PurchaseType": "Disabled",
+                "FormatDefinition": "SD",
+                "PurchasePrompt": null,
+                "MaxDownloads": 30,
+                "MaxAllowedDevices": 5
+            },
+            "SvodParentPackageId": null,
+            "BvodParentPackageId": null,
+            "TitleAssetId": "CITL000218D7B4D44E",
+            "ExtendedProperties": [],
+            "RelatedPackagesIds": []
+        },
+        {
+            "odata.type": "zon.vod.central.odata.api.model.Category",
+            "Id": "1",
+            "Code": null,
+            "Name": "Kids",
+            "ItemType": "category",
+            "PosterUri": "http://10.144.97.145/cti2/services/PosterService/PosterAppSrv.ashx?image=1",
+            "IsAdult": false,
+            "Catalogs": [
+                "iris_nagra"
+            ],
+            "Description": null
+        }
+    ]
+}
+
+Get item (Category or Package) by item identifier 
+GET /v1/odata-vod/Items('item_id')?client_id={client_id}&$format=json
+< 200
+< Content-Type: application/json
+{
+}
+
+Get SVOD parent package by item identifier (item is a Package with PackageType 'SVOD_Parent') 
+GET /v1/odata-vod/Items('item_id')/SvodParentPackage?client_id={client_id}&$format=json
+< 200
+< Content-Type: application/json
+{
+}
+
+Get BVOD parent package by item identifier (item is a Package with PackageType 'BVOD_Parent') 
+GET /v1/odata-vod/Items('item_id')/BvodParentPackage?client_id={client_id}&$format=json
+< 200
+< Content-Type: application/json
+{
+}
+
+Get title asset by item identifier (item is a Package) 
+GET /v1/odata-vod/Items('item_id')/TitleAsset?client_id={client_id}&$format=json
+< 200
+< Content-Type: application/json
+{
+}
+
+Get related packages (cross selling features) by item identifier (item is a Package) 
+GET /v1/odata-vod/Items('item_id')/RelatedPackages?client_id={client_id}&$format=json
+< 200
+< Content-Type: application/json
+{
+}
+
+--
+Title Assets
+The following is a section of resources related to TitleAsset entity
+--
+
+List VOD Title Assets.
+GET /v1/odata-vod/TitleAssets?client_id={client_id}&$format=json
+< 200
+< Content-Type: application/json
+{
+    "odata.metadata": "http://zon-odata-vod.apphb.com/Collections.svc/$metadata#TitleAssets",
+    "value": [
+        {
+            "Id": "CITL000218D7B4D44E",
+            "AssetId": "CITL000218D7B4D44E",
+            "TitleMetaData": {
+                "AdiAssetId": "CITL000218D7B4D44E",
+                "Title": "Alice Cooper: Teenage Frankenstein",
+                "OriginalTitle": "Alice Cooper: Teenage Frankenstein",
+                "TitleBrief": "Alice Cooper",
+                "Year": "",
+                "DisplayDirectors": "",
+                "Directors": [],
+                "DisplayActors": "",
+                "Actors": [],
+                "SummaryShort": "Um videoclip de Alice Cooper",
+                "SummaryLong": "Um videoclip de Alice Cooper",
+                "SummaryMedium": "Um videoclip de Alice Cooper",
+                "RatingCode": null,
+                "Rating": "NC",
+                "DisplayGenres": "Rock",
+                "Genres": [
+                    "Rock"
+                ],
+                "CountryOfOrigin": "",
+                "EpisodeId": null,
+                "EpisodeName": null,
+                "StudioCode": "N",
+                "StudioName": "N",
+                "MovieRunTime": "PT5M13S",
+                "PreviewPeriod": 0,
+                "ProviderQAContact": "Universal Music Portugal SA",
+                "RatingImdb": null,
+                "MetadataTag": null,
+                "Tags": []
+            },
+            "TrailerVideoStreams": [
+                {
+                    "AdiAssetId": "",
+                    "Type": "TransportStream",
+                    "IsHD": false,
+                    "ContentDuration": "PT0S",
+                    "StreamUrl": null,
+                    "BitRate": 0,
+                    "ScreenFormat": "",
+                    "Languages": null,
+                    "AudioType": "",
+                    "PlayReadyKeyId": null
+                }
+            ],
+            "MovieVideoStreams": [
+                {
+                    "AdiAssetId": "CIMV000218D7B4D44E",
+                    "Type": "TransportStream",
+                    "IsHD": false,
+                    "ContentDuration": "PT5M13S",
+                    "StreamUrl": null,
+                    "BitRate": 2182516,
+                    "ScreenFormat": "4x3",
+                    "Languages": null,
+                    "AudioType": "Stereo",
+                    "PlayReadyKeyId": null
+                }
+            ],
+            "ExtendedProperties": []
+        }
+    ]
+}
+
+Get VOD title asset by title asset identifier.
+GET /v1/odata-vod/TitleAssets('title_asset_id')?client_id={client_id}&$format=json
+< 200
+< Content-Type: application/json
+{
+}
+
